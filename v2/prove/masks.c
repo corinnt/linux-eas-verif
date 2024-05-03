@@ -1,12 +1,19 @@
 #include "../globals.c"
 
 /*@
+   axiomatic schedule_cpumask {
+   logic bool cpumask_test_cpu(int cpu, struct cpumask *m);
+   }
+*/
+
+
+/*@
 requires 0 <= cpu < small_cpumask_bits;
 assigns \nothing;
 ensures \result <==> m->bits[cpu];
 */
 bool cpumask_test_cpu(int cpu, struct cpumask *m);
-// this one commented below was what was extracted - does it matter that it's const? 
+// the header commented below was what was extracted - does it matter that it's const? 
 // is dropping the const an artifact of the extraction?
 //bool cpumask_test_cpu(int cpu, const struct cpumask * cpumask);
 

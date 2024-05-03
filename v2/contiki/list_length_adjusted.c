@@ -1,5 +1,5 @@
 //#ifdef _IN_LIST_MAIN_FILE
-
+#include "lemmas.h"
 #define INT_MAX 2147483647
 #define MAX_SIZE INT_MAX-1
 #define NULL ((void*) 0)
@@ -10,31 +10,6 @@ typedef struct node {
 } Node ;
 
 //typedef struct node* list_t ;
-
-/*@ 
-  inductive linked_n{L}(
-    Node* root, 
-    Node** array, 
-    integer index, 
-    integer n, 
-    Node* bound
-  )
-  {
-    case linked_n_bound{L}:
-      \forall Node** array, *bound, integer index ;
-    0 <= index <= MAX_SIZE ==>
-      linked_n(bound, array, index, 0, bound);
-      
-    case linked_n_cons{L}:
-      \forall Node* root, **array, *bound, integer index, n ;
-        0 < n ==> 0 <= index ==> 
-        0 <= index + n <= MAX_SIZE ==>
-    \valid(root) ==> 
-      root == array[index] ==>
-    linked_n(root->next, array, index + 1, n - 1, bound) ==>
-      linked_n(root, array, index, n, bound);
-  }
-*/
 
 /*@
   requires \valid(list);

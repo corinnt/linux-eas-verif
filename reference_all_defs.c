@@ -12,7 +12,7 @@
 	arch_raw_cpu_ptr(ptr);						\
 })
 
-#define __percpu_arg(x)		__percpu_prefix "%" #x
+#define __percpu_arg(x)		__percpu_prefix "%" 
 
 #define arch_raw_cpu_ptr(ptr)				\
 ({							\

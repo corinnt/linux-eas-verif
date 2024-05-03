@@ -1,4 +1,4 @@
-#include "../defs.c"
+#include "../macros.c"
 #include "../globals.c"
 #include "masks.c"
 #include "for_loops.c"

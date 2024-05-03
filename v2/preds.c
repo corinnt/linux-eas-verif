@@ -1,4 +1,4 @@
-#include "defs.c"
+#include "macros.c"
 #include "globals.c"
 
 #include <stdbool.h>
@@ -19,7 +19,8 @@
 // TODO maybe need the span(array of unsigned longs) to be less than some max value?
 
 /*@
-requires \valid_read(sd); 
+requires \valid_read(sd);
+requires sd != NULL; //does this actually require not null
 assigns \nothing;
 ensures \result == sched_domain_span(sd);
 */
