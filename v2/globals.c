@@ -88,7 +88,7 @@ struct  perf_domain {
 
 struct  cpumask __cpu_online_mask;
 
-struct  sched_domain *sd_asym_cpucapacity; // TODO(corinn) what's this notation?
+struct  sched_domain *sd_asym_cpucapacity;
 
 unsigned long this_cpu_off;
 cpumask_var_t select_rq_mask;

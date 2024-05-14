@@ -1,11 +1,14 @@
+
 #include "../macros.c"
 #include "../globals.c"
 #include "../preds.c"
 #include "masks.c"
 
+//#include "../lemmas.h"
+
 #define MAX_SIZE INT_MAX-1
 
-/*@ 
+/*@
   inductive linked_n{L}(
     struct sched_domain* root, 
     struct sched_domain** array, 
@@ -30,38 +33,39 @@
   }
 */
 
-#define all_valid \ 
+#define all_valid \
 	\valid_read(sd) && \
 	\valid(array + (0 .. MAX_SIZE - 1)) && \
-	\forall integer y ; \ 
-		0 <= y < index + n ==> \ 
-		\valid_read( * (array + y))
-
-#define all_separated \
-	\separated(sd, array + (0 .. MAX_SIZE - 1)) && \
-	\separated(sd, *(array + (0 .. MAX_SIZE - 1)))
+	\valid(array[0 .. MAX_SIZE - 1])
 
 #define separate_nodes_from_array \
-	\forall integer y ; \
-		0 <= y < index + n ==> \ 
-		\separated( * (array + y), array + (0 .. MAX_SIZE - 1))
+		\separated(array[0 .. index + n], array + (0 .. MAX_SIZE - 1))
 
 #define separate_all_nodes \
 	\forall integer y, z; \
 		0 <= y < index + n && 0 <= z < index + n && y != z ==> \
 		\separated(* (array+y), *(array+z))
-	
 
+/*@
+requires separate_nodes_from_array; 
+requires separate_all_nodes; 
+requires Linked : linked_n(sd, array, index, n, NULL);
+requires all_valid; 
 
-/* TODO add in to main specs
+requires \valid(loop_index) && *loop_index == 0; 
+requires 0 <= index < INT_MAX && 0 <= n < INT_MAX  ;
+requires 0 <= prev_cpu < small_cpumask_bits; 
+
+assigns \result, *loop_index;
+
 behavior some:
 	assumes sd != NULL 
 			&& (\exists integer j; index <= j < index + n
-		&& cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]))); 
-	ensures \result != NULL; 										
+		&& cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])));  										
 	ensures cpumask_test_cpu(prev_cpu, sched_domain_span(\result));  //this one passes
 	ensures \forall integer j; index <= j < *loop_index  
 		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
+	ensures \result != NULL;
 
 behavior none:
 	assumes sd == NULL 
@@ -72,21 +76,8 @@ behavior none:
 complete behaviors;
 disjoint behaviors;
 */
-
-/*@
-requires separate_nodes_from_array; 
-requires separate_all_nodes; 
-requires Linked : linked_n(sd, array, index, n, NULL);
-requires all_valid; 
-
-requires \valid(loop_index) && *loop_index == 0; 
-requires 0 <= index < INT_MAX && 0 <= n < INT_MAX  ;
-requires 0 <= prev_cpu < small_cpumask_bits; // would this be small_cpumask_bits or something else? 	
-
-assigns \result, *loop_index;
-*/
 struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
-/*@ ghost (struct sched_domain** array, int index, int n, int \ghost* loop_index) */ //TODO fix this to use 
+/*@ ghost (struct sched_domain** array, int index, int n, int \ghost* loop_index) */ 
 {
 	/*@	
 	    loop invariant 0 <= *loop_index <= index + n ;
@@ -96,11 +87,32 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		loop assigns sd, *loop_index; 
 		loop variant index + n - *loop_index; 
 	*/
-	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ //need valid_read of all sd passed to sched_domain_span to maintain loop invariant 3
+	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ 
+		StartLoopC:
+		//@ assert immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 		//@ ghost (*loop_index)++; 
+		//@ assert sd_unchanged: sd == \at(sd, StartLoopC); 
+		//@ assert sd_not_null: sd != NULL; 
+		//@ assert later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 		sd = sd->parent; 
-		//@ assert sd == NULL || \valid(sd); 
+		//@ assert sd_could_null: sd == NULL || \valid(sd); 
+		//if sd_changed passes, the node separation is working well enough that sd and its parent are never the same
+		//@ assert sd_changed: sd != \at(sd, StartLoopC); 
+		//@ assert not_found_yet: \forall integer j; 0 <= j < *loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
 			
 	return sd; 
 }
+
+
+
+//not in use 
+#define all_separated \
+	\separated(sd, array + (0 .. MAX_SIZE - 1)) && \
+	\separated(sd, array[0 .. MAX_SIZE - 1])
+
+/*  //before, did this for all_valid of pointers in array
+	\forall integer y ; \ 
+		0 <= y < index + n ==> \ 
+		\valid_read( * (array + y))
+*/

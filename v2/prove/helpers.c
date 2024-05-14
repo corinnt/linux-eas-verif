@@ -1,7 +1,7 @@
 #include "../globals.c"
-#include "../defs.c"
+#include "../macros.c"
 
-/* this maybe needs to be proved/has logic 
+/* TODO this maybe needs to be proved/has logic 
 */
 int util_fits_cpu(unsigned long util, unsigned long uclamp_min, unsigned long uclamp_max, int cpu);
 

@@ -1,4 +1,5 @@
 #include "../globals.c"
+#include "../macros.c"
 
 /*@
    axiomatic schedule_cpumask {
@@ -6,6 +7,7 @@
    }
 */
 
+//QUESTION why does this not require valid_read ? 
 
 /*@
 requires 0 <= cpu < small_cpumask_bits;

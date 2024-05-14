@@ -42,12 +42,13 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 	if (!sd) // after exits loop, if sd is NULL, there was no mixed topology ? 
 		goto unlock;
 
-	target = prev_cpu;
+	target = prev_cpu; 
+	// at this point, target has now been assigned, so only way to return a -1 is if you `goto unlock` before this. 
 
 	// should this be proved, or just predicate?
 	// maybe requires sched domain spans over one of the allowed CPUs for the task
 	sync_entity_load_avg(&p->se);  
-	if (!task_util_est(p) && p_util_min == 0)
+	if (!task_util_est(p) && p_util_min == 0) //TODO is this checking if it doesn't already have utilization data? 
 		goto unlock;
 
 	eenv_task_busy_time(&eenv, p, prev_cpu); 
@@ -113,7 +114,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 			}
 
 			fits = util_fits_cpu(util, util_min, util_max, cpu); // find true/false will it fit
-			if (!fits) // skip all cpus that won't fit the proc
+			if (!fits) // skip all cpus that won't fit the task
 				continue;
 
 			lsub_positive(&cpu_cap, util); //local sub_positive
@@ -177,7 +178,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 			cur_delta = compute_energy(&eenv, pd, cpus, p, // is this the total if the process was added?
 						   max_spare_cap_cpu);
 			/* CPU utilization has changed */
-			if (cur_delta < base_energy) // corinn: no locks held?
+			if (cur_delta < base_energy) // corinn: no locks held? this part strikes me as odd - is it like a canary for whether we can't actually make this call anymore?
 				goto unlock;
 			cur_delta -= base_energy;
 
@@ -205,8 +206,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 	//	if best does not fit, but best has a better thermal cap than prev
 
 	if ((best_fits > prev_fits) ||
-	    ((best_fits > 0) && (best_delta < prev_delta)) ||
-	    ((best_fits < 0) && (best_thermal_cap > prev_thermal_cap)))
+	    ((best_fits > 0) && (best_delta < prev_delta)) || //this logic is oddly put - possible room for bug?
+	    ((best_fits < 0) && (best_thermal_cap > prev_thermal_cap))) // is that it didn't get instantiated?
 		target = best_energy_cpu;
 
 	return target;
