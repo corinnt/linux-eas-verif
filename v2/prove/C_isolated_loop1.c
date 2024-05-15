@@ -117,20 +117,18 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		//@ assert arr_loop_index_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
 		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
-		//@ assert sd_unchanged: sd == \at(sd, Before); 
-		
-		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
-		sd = sd->parent; 
-		//@ assert sd_could_null: sd == NULL || \valid(sd); 
-
 		//@ ghost loop_index++; 
 
-		//if sd_changed passes, the node separation is working well enough that sd and its parent are never the same
-		//@ assert sd_changed: sd != \at(sd, Before); 
+		// unnecessary: assert sd_unchanged: sd == \at(sd, Before); 
+		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+		
+		sd = sd->parent; 
+
+		// unnecessary: assert sd_could_null: sd == NULL || \valid(sd); 
+		// unnecessary: assert sd_changed: sd != \at(sd, Before); 
 
 		//@ assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
-	// don't think it knows that there will always be a NULL at the end of the chain
 	//@ assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
 
 	//@ assert final_sd_equals_arr_loop_index: sd == array[loop_index]; 
