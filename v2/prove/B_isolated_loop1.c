@@ -6,7 +6,7 @@
 
 //#include "../lemmas.h"
 
-// NOTE: version which uses distance rather than loop_index for loop variant
+// NOTE: version which uses value loop_index rather than pointer loop_index
 
 #define MAX_SIZE INT_MAX-1
 
@@ -33,16 +33,6 @@
     linked_n(root->parent, array, index + 1, n - 1, bound) ==>
       linked_n(root, array, index, n, bound);
   }
-*/
-
-/* ghost unsigned int sd_distance(struct sched_domain* sd) {
-    unsigned int distance = 0; 
-    while (sd) {
-        distance++;
-        sd = sd->parent;
-    } 
-    return distance; 
-}
 */
 
 #define all_valid \
