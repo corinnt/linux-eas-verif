@@ -88,14 +88,14 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		loop variant index + n - *loop_index; 
 	*/
 	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ 
-		// ghost StartLoopC: ; // tried this as a normal and ghost label, now on LoopCurrent^
+		//@ ghost Before: ; 
 		//@ assert linked: linked_n(sd, array, index + (*loop_index), n - (*loop_index), NULL);
 		//@ assert sd_not_null: sd != NULL; 
 
 		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 		//@ assert arr_j_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[*loop_index])); 
 
-		//@ assert sd_unchanged: sd == \at(sd, LoopCurrent); 
+		//@ assert sd_unchanged: sd == \at(sd, Before); 
 		
 		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 		sd = sd->parent; 
@@ -104,7 +104,7 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		//@ ghost (*loop_index)++; 
 
 		//if sd_changed passes, the node separation is working well enough that sd and its parent are never the same
-		//@ assert sd_changed: sd != \at(sd, LoopCurrent); 
+		//@ assert sd_changed: sd != \at(sd, Before); 
 
 		//@ assert not_found_yet: \forall integer j; 0 <= j < *loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
