@@ -19,8 +19,8 @@
 // TODO maybe need the span(array of unsigned longs) to be less than some max value?
 // don't particularly think so - it's just type coercion ig ? so any problems w the value would be way downstream
 
+//TODO do I need to specify that sched_domain_span isn't null? like it shouldn't be, but we do pass NULL sd to it
 /*@
-requires \valid_read(sd);
 assigns \nothing;
 ensures \result == sched_domain_span(sd);
 */

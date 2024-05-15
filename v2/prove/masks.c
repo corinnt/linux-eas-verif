@@ -12,7 +12,17 @@
 /*@
 requires 0 <= cpu < small_cpumask_bits;
 assigns \nothing;
-ensures \result <==> m->bits[cpu];
+
+behavior null: 
+   assumes m == NULL; 
+   ensures !\result;
+
+behavior not_null:
+   assumes m != NULL; 
+   ensures \result <==> m->bits[cpu];
+
+complete behaviors;
+disjoint behaviors;
 */
 bool cpumask_test_cpu(int cpu, struct cpumask *m);
 // the header commented below was what was extracted - does it matter that it's const? 
