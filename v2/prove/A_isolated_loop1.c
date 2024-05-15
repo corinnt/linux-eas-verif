@@ -53,7 +53,7 @@ requires Linked : linked_n(sd, array, index, n, NULL);
 requires all_valid; 
 
 requires \valid(loop_index) && *loop_index == 0; 
-requires 0 <= index < INT_MAX && 0 <= n < INT_MAX  ;
+requires 0 <= index < INT_MAX && 0 <= n < INT_MAX;
 requires 0 <= prev_cpu < small_cpumask_bits; 
 
 assigns \result, *loop_index;
@@ -62,16 +62,16 @@ behavior some:
 	assumes sd != NULL 
 			&& (\exists integer j; index <= j < index + n
 		&& cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])));  										
-	ensures cpumask_test_cpu(prev_cpu, sched_domain_span(\result));  //this one passes
-	ensures \forall integer j; index <= j < *loop_index  
+	ensures result_in_mask: cpumask_test_cpu(prev_cpu, sched_domain_span(\result));
+	ensures result_is_min: \forall integer j; index <= j < \at(*loop_index, Post)
 		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
-	ensures \result != NULL;
+	ensures result_not_null: \result != NULL;
 
 behavior none:
 	assumes sd == NULL 
 			|| (\forall integer j; index <= j < index + n 
 		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]))); 
-	ensures \result == NULL; 
+	ensures result_is_null: \result == NULL; 
 
 complete behaviors;
 disjoint behaviors;
@@ -88,31 +88,27 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		loop variant index + n - *loop_index; 
 	*/
 	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ 
-		StartLoopC:
-		//@ assert immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
-		//@ ghost (*loop_index)++; 
-		//@ assert sd_unchanged: sd == \at(sd, StartLoopC); 
+		// ghost StartLoopC: ; // tried this as a normal and ghost label, now on LoopCurrent^
+		//@ assert linked: linked_n(sd, array, index + (*loop_index), n - (*loop_index), NULL);
 		//@ assert sd_not_null: sd != NULL; 
-		//@ assert later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+
+		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+		//@ assert arr_j_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[*loop_index])); 
+
+		//@ assert sd_unchanged: sd == \at(sd, LoopCurrent); 
+		
+		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 		sd = sd->parent; 
 		//@ assert sd_could_null: sd == NULL || \valid(sd); 
+
+		//@ ghost (*loop_index)++; 
+
 		//if sd_changed passes, the node separation is working well enough that sd and its parent are never the same
-		//@ assert sd_changed: sd != \at(sd, StartLoopC); 
+		//@ assert sd_changed: sd != \at(sd, LoopCurrent); 
+
 		//@ assert not_found_yet: \forall integer j; 0 <= j < *loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
-			
+	// don't think it knows that there will always be a NULL at the end of the chain
+	//@ assert final_cases: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 	return sd; 
 }
-
-
-
-//not in use 
-#define all_separated \
-	\separated(sd, array + (0 .. MAX_SIZE - 1)) && \
-	\separated(sd, array[0 .. MAX_SIZE - 1])
-
-/*  //before, did this for all_valid of pointers in array
-	\forall integer y ; \ 
-		0 <= y < index + n ==> \ 
-		\valid_read( * (array + y))
-*/
