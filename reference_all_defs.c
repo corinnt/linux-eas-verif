@@ -422,7 +422,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 	struct energy_env eenv;
 
 	rcu_read_lock();
-	pd = rcu_dereference(rd->pd); // of 
+	pd = rcu_dereference(rd->pd); // performance domain of root domain which is root domain of runqueue
 	if (!pd || READ_ONCE(rd->overutilized))
 		goto unlock;
 
