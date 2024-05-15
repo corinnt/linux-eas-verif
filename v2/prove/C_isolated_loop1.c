@@ -35,14 +35,23 @@
   }
 */
 
-/* ghost unsigned int sd_distance(struct sched_domain* sd) {
-    unsigned int distance = 0; 
-    while (sd) {
-        distance++;
-        sd = sd->parent;
-    } 
-    return distance; 
-}
+// sd_distance dormant
+/*
+    logic int sd_distance(struct sched_domain* sd);
+*/
+
+/* ghost 
+	/@ ensures \result == sd_distance(sd) ;
+	 ensures \result >= 0 ; 
+	@/
+	unsigned int sd_distance(struct sched_domain* sd) {
+		unsigned int distance = 0; 
+		while (sd) {
+			distance++;
+			sd = sd->parent;
+		} 
+    	return distance; 
+	}
 */
 
 #define all_valid \
@@ -64,8 +73,8 @@ requires separate_all_nodes;
 requires Linked : linked_n(sd, array, index, n, NULL);
 requires all_valid; 
 
-requires loop_index == 0; 
-requires 0 <= index < INT_MAX && 0 <= n < INT_MAX;
+requires loop_index == index && \at(loop_index, Pre) == 0 && \at(index, Pre) == 0; 
+requires 0 <= n < INT_MAX;
 requires 0 <= prev_cpu < small_cpumask_bits; 
 
 assigns \result;
@@ -92,9 +101,9 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 /*@ ghost (struct sched_domain** array, int index, int n, int loop_index) */ 
 {
 	/*@	
-	  loop invariant 0 <= loop_index <= index + n ;
-		loop invariant linked_n(sd, array, index + (loop_index), n - (loop_index), NULL);
-		loop invariant \forall integer j; 0 <= j < loop_index 
+	  	loop invariant loop_index_bounds: index <= loop_index <= index + n ;
+		loop invariant linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
+		loop invariant result_is_min: \forall integer j; 0 <= j < loop_index 
 			==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
 		loop assigns sd, loop_index; 
 		loop variant index + n - loop_index; 
