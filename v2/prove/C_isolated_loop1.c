@@ -6,7 +6,7 @@
 
 //#include "../lemmas.h"
 
-// NOTE: version which uses distance rather than loop_index for loop variant
+// NOTE: uses assertions + loop_index and index that both start at 0 
 
 #define MAX_SIZE INT_MAX-1
 
@@ -109,7 +109,6 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		loop variant index + n - loop_index; 
 	*/
 	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ 
-		//@ ghost Before: ; 
 		//@ assert linked: linked_n(sd, array, index + loop_index, n - loop_index, NULL);
 		//@ assert sd_not_null: sd != NULL; 
 
@@ -119,13 +118,13 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 
 		//@ ghost loop_index++; 
 
-		// unnecessary: assert sd_unchanged: sd == \at(sd, Before); 
+		// unnecessary: assert sd_unchanged: sd == \at(sd, LoopCurrent); 
 		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
-		
+
 		sd = sd->parent; 
 
 		// unnecessary: assert sd_could_null: sd == NULL || \valid(sd); 
-		// unnecessary: assert sd_changed: sd != \at(sd, Before); 
+		// unnecessary: assert sd_changed: sd != \at(sd, LoopCurrent); // changed this from ghost marker Before:
 
 		//@ assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
