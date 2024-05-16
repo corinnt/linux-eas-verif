@@ -20,9 +20,11 @@
 // don't particularly think so - it's just type coercion ig ? so any problems w the value would be way downstream
 
 //TODO do I need to specify that sched_domain_span isn't null? like it shouldn't be, but we do pass NULL sd to it
+
 /*@
 assigns \nothing;
 ensures \result == sched_domain_span(sd);
+ensures \valid(\result); 
 */
 struct cpumask * sched_domain_span(struct sched_domain * sd);
 

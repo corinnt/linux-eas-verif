@@ -9,8 +9,9 @@
 
 //QUESTION why does this not require valid_read ? 
 
-/*@
+/*
 requires 0 <= cpu < small_cpumask_bits;
+requires 
 assigns \nothing;
 
 behavior null: 
@@ -19,10 +20,18 @@ behavior null:
 
 behavior not_null:
    assumes m != NULL; 
-   ensures \result <==> m->bits[cpu];
+   ensures \result ==> cpumask_test_cpu(cpu, m);
 
 complete behaviors;
 disjoint behaviors;
+*/
+
+/*@
+requires 0 <= cpu < small_cpumask_bits;
+requires \valid_read(m);
+
+assigns \nothing;
+ensures \result == cpumask_test_cpu(cpu, m);
 */
 bool cpumask_test_cpu(int cpu, struct cpumask *m);
 // the header commented below was what was extracted - does it matter that it's const? 

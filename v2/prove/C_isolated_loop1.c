@@ -35,25 +35,6 @@
   }
 */
 
-// sd_distance dormant
-/*
-    logic int sd_distance(struct sched_domain* sd);
-*/
-
-/* ghost 
-	/@ ensures \result == sd_distance(sd) ;
-	 ensures \result >= 0 ; 
-	@/
-	unsigned int sd_distance(struct sched_domain* sd) {
-		unsigned int distance = 0; 
-		while (sd) {
-			distance++;
-			sd = sd->parent;
-		} 
-    	return distance; 
-	}
-*/
-
 #define all_valid \
 	\valid_read(sd) && \
 	\valid(array + (0 .. MAX_SIZE - 1)) && \
@@ -67,6 +48,8 @@
 		0 <= y < index + n && 0 <= z < index + n && y != z ==> \
 		\separated(* (array+y), *(array+z))
 
+int loop_index = 0; 
+
 /*@
 requires separate_nodes_from_array; 
 requires separate_all_nodes; 
@@ -77,7 +60,7 @@ requires loop_index == index && \at(loop_index, Pre) == 0 && \at(index, Pre) == 
 requires 0 <= n < INT_MAX;
 requires 0 <= prev_cpu < small_cpumask_bits; 
 
-assigns \result;
+assigns \result, loop_index;
 
 behavior some:
 	assumes sd != NULL 
@@ -98,7 +81,7 @@ complete behaviors;
 disjoint behaviors;
 */
 struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
-/*@ ghost (struct sched_domain** array, int index, int n, int loop_index) */ 
+/*@ ghost (struct sched_domain** array, int index, int n) */ 
 {
 	/*@	
 	  	loop invariant loop_index_bounds: index <= loop_index <= index + n ;
@@ -109,28 +92,28 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		loop variant index + n - loop_index; 
 	*/
 	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ 
+		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 		//@ assert linked: linked_n(sd, array, index + loop_index, n - loop_index, NULL);
 		//@ assert sd_not_null: sd != NULL; 
-
 		//@ assert sd_equal_arr_loop_index: sd == array[loop_index]; 
 		//@ assert arr_loop_index_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
-		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
-		//@ ghost loop_index++; 
+		// ghost loop_index++; 
+		loop_index++; 
 
-		// unnecessary: assert sd_unchanged: sd == \at(sd, LoopCurrent); 
+		//@ assert sd_unchanged: sd == \at(sd, LoopCurrent); 
 		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
 		sd = sd->parent; 
 
-		// unnecessary: assert sd_could_null: sd == NULL || \valid(sd); 
-		// unnecessary: assert sd_changed: sd != \at(sd, LoopCurrent); // changed this from ghost marker Before:
+		//@ assert sd_could_null: sd == NULL || \valid(sd); 
+		//@ assert sd_changed: sd != \at(sd, LoopCurrent); // changed this from ghost marker Before:
 
 		//@ assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
 	//@ assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
 
-	//@ assert final_sd_equals_arr_loop_index: sd == array[loop_index]; 
+	//@ assert final_sd_equals_arr_loop_index: sd != NULL ==> sd == array[loop_index]; 
 	//@ assert final_cases1: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
 	//@ assert final_cases2: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 	return sd; 
