@@ -7,8 +7,6 @@
    }
 */
 
-//QUESTION why does this not require valid_read ? 
-
 /*
 requires 0 <= cpu < small_cpumask_bits;
 requires 

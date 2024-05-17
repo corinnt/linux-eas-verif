@@ -24,7 +24,7 @@
 /*@
 assigns \nothing;
 ensures \result == sched_domain_span(sd);
-ensures \valid(\result); 
+ensures \valid_read(\result); 
 */
 struct cpumask * sched_domain_span(struct sched_domain * sd);
 
