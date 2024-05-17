@@ -64,17 +64,16 @@ assigns \result;
 behavior some:
 	assumes sd != NULL 
 			&& (\exists integer j; index <= j < index + n
-		&& cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])));  										
-	ensures result_in_mask: cpumask_test_cpu(prev_cpu, sched_domain_span(\result));
+		&& sched_domain_span(array[j])->bits[prev_cpu]; 
 	ensures defn_result_in_mask: sched_domain_span(\result)->bits[prev_cpu]; 
-	ensures result_is_min: \forall integer j; index <= j < \at(loop_index, Post)
-		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
+	ensures result_is_min: \forall integer j; index <= j < loop_index
+		==> !sched_domain_span(array[j])->bits[prev_cpu]; 
 	ensures result_not_null: \result != NULL;
 
 behavior none:
 	assumes sd == NULL 
 			|| (\forall integer j; index <= j < index + n 
-		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]))); 
+		==> !sched_domain_span(array[j])->bits[prev_cpu]); 
 	ensures result_is_null: \result == NULL; 
 
 complete behaviors;
@@ -86,8 +85,8 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 	/*@	
 	  	loop invariant loop_index_bounds: index <= loop_index <= index + n ;
 		loop invariant linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
-		loop invariant result_is_min: \forall integer j; 0 <= j < loop_index 
-			==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
+		loop invariant result_is_min: \forall integer j; index <= j < loop_index
+			==> !sched_domain_span(array[j])->bits[prev_cpu]; 
 		loop assigns sd, loop_index; 
 		loop variant index + n - loop_index; 
 	*/
