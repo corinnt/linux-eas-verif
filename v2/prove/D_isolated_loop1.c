@@ -6,7 +6,7 @@
 
 //#include "../lemmas.h"
 
-// all prove! uses assertions + loop_index and index that both start at 0
+// all prove with predicate of cpumask_test_cpu(cpu, m) <==> m->bits[cpu], then all specs refer to that same formulation
 // depends on stricter assumptions for pointer validity in sched_domain_span and cpumask_test_cpu
 
 #define MAX_SIZE INT_MAX-1
@@ -64,7 +64,7 @@ assigns \result;
 behavior some:
 	assumes sd != NULL 
 			&& (\exists integer j; index <= j < index + n
-		&& sched_domain_span(array[j])->bits[prev_cpu]; 
+		&& sched_domain_span(array[j])->bits[prev_cpu]); 
 	ensures defn_result_in_mask: sched_domain_span(\result)->bits[prev_cpu]; 
 	ensures result_is_min: \forall integer j; index <= j < loop_index
 		==> !sched_domain_span(array[j])->bits[prev_cpu]; 
@@ -94,24 +94,23 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		//@ assert \valid_read(sd); 
 		//@ assert linked: linked_n(sd, array, index + loop_index, n - loop_index, NULL);
 
-		//@ assert defn_of_notin_mask: !(sched_domain_span(sd)->bits[prev_cpu]); 
-		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
-
-		//@ assert sd_not_null: sd != NULL; 
 		//@ assert sd_equal_arr_loop_index: sd == array[loop_index]; 
-		//@ assert arr_loop_index_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
+		//@ assert sd_not_null: sd != NULL; 
+
+		//@ assert defn_of_notin_mask: !(sched_domain_span(sd)->bits[prev_cpu]); 
+		//@ assert arr_loop_index_notin_mask:  !(sched_domain_span(array[loop_index])->bits[prev_cpu]); 
 
 		//@ ghost loop_index++; 
 
 		//@ assert sd_unchanged: sd == \at(sd, LoopCurrent); 
-		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+		// assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
 		sd = sd->parent; 
 
 		//@ assert sd_could_null: sd == NULL || \valid(sd); 
 		//@ assert sd_changed: sd != \at(sd, LoopCurrent);
 
-		//@ assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
+		// assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
 	//@ assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
 
