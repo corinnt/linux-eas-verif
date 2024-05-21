@@ -1,3 +1,4 @@
+
 #define perf_domain_span(pd) NULL
 
 #define this_rq()		this_cpu_ptr(&runqueues)

@@ -17,8 +17,8 @@
 //this is just a fn that returns the sd->span of type as a cpumask
 // don't think I need to be able to write to it, and don't think there are any particular limits
 // TODO maybe need the span(array of unsigned longs) to be less than some max value?
-// don't particularly think so - it's just type coercion ig ? so any problems w the value would be way downstream
-
+// don't particularly think so - sched_domain_span is just type coercion I guess? 
+// so any problems w the value would be way downstream
 
 /*@
 requires \valid_read(sd); 

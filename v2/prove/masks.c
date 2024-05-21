@@ -15,7 +15,7 @@ requires \valid_read(m->bits+(0 .. small_cpumask_bits - 1));
 assigns \nothing;
 
 ensures \result <==> m->bits[cpu];
-ensures \result <==> cpumask_test_cpu(cpu, m);
+ensures \result == cpumask_test_cpu(cpu, m);
 */
 bool cpumask_test_cpu(int cpu, struct cpumask *m);
 

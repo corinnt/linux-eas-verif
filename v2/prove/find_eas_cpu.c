@@ -186,7 +186,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 			 * Both fit for the task but best energy cpu has lower
 			 * energy impact.
 			 */
-			if ((max_fits > 0) && (best_fits > 0) &&
+			if ((max_fits > 0) && (best_fits > 0) && // TODO
 			    (cur_delta >= best_delta))
 				continue;
 
@@ -207,7 +207,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 
 	if ((best_fits > prev_fits) ||
 	    ((best_fits > 0) && (best_delta < prev_delta)) || //this logic is oddly put - possible room for bug?
-	    ((best_fits < 0) && (best_thermal_cap > prev_thermal_cap))) // is that it didn't get instantiated?
+	    ((best_fits < 0) && (best_thermal_cap > prev_thermal_cap))) // is it that best_fits didn't get instantiated?
 		target = best_energy_cpu;
 
 	return target;
