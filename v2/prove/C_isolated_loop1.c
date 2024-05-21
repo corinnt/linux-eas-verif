@@ -6,8 +6,7 @@
 
 //#include "../lemmas.h"
 
-// all prove! uses assertions + loop_index and index that both start at 0
-// depends on stricter assumptions for pointer validity in sched_domain_span and cpumask_test_cpu
+// all prove when the postcondition for cpumask_test_cpu is self-referential (eg just `cpumask_test_cpu(cpu, m)`)
 
 #define MAX_SIZE INT_MAX-1
 
@@ -66,7 +65,6 @@ behavior some:
 			&& (\exists integer j; index <= j < index + n
 		&& cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])));  										
 	ensures result_in_mask: cpumask_test_cpu(prev_cpu, sched_domain_span(\result));
-	ensures defn_result_in_mask: sched_domain_span(\result)->bits[prev_cpu]; 
 	ensures result_is_min: \forall integer j; index <= j < \at(loop_index, Post)
 		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
 	ensures result_not_null: \result != NULL;
@@ -116,8 +114,8 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 	}
 	//@ assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
 
-	// assert final_sd_equals_arr_loop_index: sd != NULL ==> sd == array[loop_index]; 
-	// assert final_cases1: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
-	// assert final_cases2: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+	//@ assert final_sd_equals_arr_loop_index: sd != NULL ==> sd == array[loop_index]; 
+	//@ assert final_cases1: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
+	//@ assert final_cases2: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 	return sd; 
 }

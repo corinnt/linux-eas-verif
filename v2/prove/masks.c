@@ -7,31 +7,18 @@
    }
 */
 
-/*
-requires 0 <= cpu < small_cpumask_bits;
-requires 
-assigns \nothing;
-
-behavior null: 
-   assumes m == NULL; 
-   ensures !\result;
-
-behavior not_null:
-   assumes m != NULL; 
-   ensures \result ==> cpumask_test_cpu(cpu, m);
-
-complete behaviors;
-disjoint behaviors;
-*/
-
 /*@
 requires 0 <= cpu < small_cpumask_bits;
 requires \valid_read(m);
+requires \valid_read(m->bits+(0 .. small_cpumask_bits - 1));
 
 assigns \nothing;
-ensures \result == cpumask_test_cpu(cpu, m);
+
+ensures \result <==> m->bits[cpu];
+ensures \result <==> cpumask_test_cpu(cpu, m);
 */
 bool cpumask_test_cpu(int cpu, struct cpumask *m);
+
 // the header commented below was what was extracted - does it matter that it's const? 
 // is dropping the const an artifact of the extraction?
 //bool cpumask_test_cpu(int cpu, const struct cpumask * cpumask);
