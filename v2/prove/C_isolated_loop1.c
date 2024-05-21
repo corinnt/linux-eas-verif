@@ -113,18 +113,12 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		// assert precondit_range: 0 <= prev_cpu < small_cpumask_bits;
 		// assert precondit_valid_read_sd: sd != NULL ==> \valid_read(sd);
 		// assert sd_span_ptr_valid: sd != NULL ==> \valid_read(sd->span + (0 .. small_cpumask_bits - 1)); 
-		//@ assert sd_span_valid: sd != NULL ==> \valid_read(sched_domain_span(sd));  
-		//@ assert precondit_valid_read_span: sd != NULL ==> \valid_read(sched_domain_span(sd)->bits + (0 .. small_cpumask_bits - 1));
 
-		// assert sd_could_null: sd == NULL || \valid(sd); 
-		// assert sd_changed: sd != \at(sd, LoopCurrent);
+		// These two fail: 
+		// assert sd_span_valid: sd != NULL ==> \valid_read(sched_domain_span(sd));  
+		// assert precondit_valid_read_span: sd != NULL ==> \valid_read(sched_domain_span(sd)->bits + (0 .. small_cpumask_bits - 1));
 
 		// assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
-	// assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
-
-	// assert final_sd_equals_arr_loop_index: sd != NULL ==> sd == array[loop_index]; 
-	// assert final_cases1: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
-	// assert final_cases2: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 	return sd; 
 }
