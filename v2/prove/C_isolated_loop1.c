@@ -90,32 +90,32 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		loop variant index + n - loop_index; 
 	*/
 	while (sd && !cpumask_test_cpu(prev_cpu, sched_domain_span(sd))){ 
-		//@ assert \valid_read(sd); 
-		//@ assert linked: linked_n(sd, array, index + loop_index, n - loop_index, NULL);
+		// assert \valid_read(sd); 
+		// assert linked: linked_n(sd, array, index + loop_index, n - loop_index, NULL);
 
-		//@ assert defn_of_notin_mask: !(sched_domain_span(sd)->bits[prev_cpu]); 
-		//@ assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+		// assert defn_of_notin_mask: !(sched_domain_span(sd)->bits[prev_cpu]); 
+		// assert sd_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
-		//@ assert sd_not_null: sd != NULL; 
-		//@ assert sd_equal_arr_loop_index: sd == array[loop_index]; 
-		//@ assert arr_loop_index_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
+		// assert sd_not_null: sd != NULL; 
+		// assert sd_equal_arr_loop_index: sd == array[loop_index]; 
+		// assert arr_loop_index_immediately_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
 
 		//@ ghost loop_index++; 
 
-		//@ assert sd_unchanged: sd == \at(sd, LoopCurrent); 
-		//@ assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+		// assert sd_unchanged: sd == \at(sd, LoopCurrent); 
+		// assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
 		sd = sd->parent; 
 
-		//@ assert sd_could_null: sd == NULL || \valid(sd); 
-		//@ assert sd_changed: sd != \at(sd, LoopCurrent);
+		// assert sd_could_null: sd == NULL || \valid(sd); 
+		// assert sd_changed: sd != \at(sd, LoopCurrent);
 
-		//@ assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
+		// assert not_found_yet: \forall integer j; 0 <= j < loop_index ==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j]));
 	}
-	//@ assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
+	// assert final_linked: linked_n(sd, array, loop_index, n - loop_index, NULL);
 
-	//@ assert final_sd_equals_arr_loop_index: sd != NULL ==> sd == array[loop_index]; 
-	//@ assert final_cases1: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
-	//@ assert final_cases2: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
+	// assert final_sd_equals_arr_loop_index: sd != NULL ==> sd == array[loop_index]; 
+	// assert final_cases1: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(array[loop_index])); 
+	// assert final_cases2: sd == NULL || cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 	return sd; 
 }
