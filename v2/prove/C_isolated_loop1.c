@@ -6,7 +6,9 @@
 
 //#include "../lemmas.h"
 
-// all prove when the postcondition for cpumask_test_cpu is self-referential (eg just `cpumask_test_cpu(cpu, m)`)
+/* All prove when the postcondition for cpumask_test_cpu 
+	has both the logic definition and the m->bits[cpu] definition. 
+*/
 
 #define MAX_SIZE INT_MAX-1
 
@@ -65,7 +67,7 @@ behavior some:
 			&& (\exists integer j; index <= j < index + n
 		&& cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])));  										
 	ensures result_in_mask: cpumask_test_cpu(prev_cpu, sched_domain_span(\result));
-	ensures result_is_min: \forall integer j; index <= j < \at(loop_index, Post)
+	ensures result_is_min: \forall integer j; index <= j < loop_index
 		==> !cpumask_test_cpu(prev_cpu, sched_domain_span(array[j])); 
 	ensures result_not_null: \result != NULL;
 
@@ -106,6 +108,13 @@ struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
 		// assert sd_later_notin_mask: !cpumask_test_cpu(prev_cpu, sched_domain_span(sd)); 
 
 		sd = sd->parent; 
+
+		// Preconditions for cpumask_test_cpu:
+		// assert precondit_range: 0 <= prev_cpu < small_cpumask_bits;
+		// assert precondit_valid_read_sd: sd != NULL ==> \valid_read(sd);
+		// assert sd_span_ptr_valid: sd != NULL ==> \valid_read(sd->span + (0 .. small_cpumask_bits - 1)); 
+		//@ assert sd_span_valid: sd != NULL ==> \valid_read(sched_domain_span(sd));  
+		//@ assert precondit_valid_read_span: sd != NULL ==> \valid_read(sched_domain_span(sd)->bits + (0 .. small_cpumask_bits - 1));
 
 		// assert sd_could_null: sd == NULL || \valid(sd); 
 		// assert sd_changed: sd != \at(sd, LoopCurrent);
