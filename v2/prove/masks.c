@@ -19,10 +19,6 @@ ensures \result == cpumask_test_cpu(cpu, m);
 */
 bool cpumask_test_cpu(int cpu, struct cpumask *m);
 
-// the header commented below was what was extracted - does it matter that it's const? 
-// is dropping the const an artifact of the extraction?
-//bool cpumask_test_cpu(int cpu, const struct cpumask * cpumask);
-
 unsigned int cpumask_first(const struct cpumask * srcp);
 
 bool cpumask_empty(const struct cpumask * srcp);
