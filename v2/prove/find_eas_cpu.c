@@ -88,7 +88,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 			if (!cpumask_test_cpu(cpu, p->cpus_ptr))
 				continue; // TODO next loop iter if the cpu isn't in the process's cpus_ptr ?
 
-			util = cpu_util(cpu, p, cpu, 0); // util = how much p needs
+			util = cpu_util(cpu, p, cpu, 0); // util = how much p needs. 0 is for no boosting.
 			cpu_cap = capacity_of(cpu);      // what the cpu will fit
 
 			/*
@@ -98,7 +98,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
 			 * much capacity we can get out of the CPU; this is
 			 * aligned with sched_cpu_util().
 			 */
-			if (uclamp_is_used() && !uclamp_rq_is_idle(rq)) {
+			if (uclamp_is_used() && !uclamp_rq_is_idle(rq)) { //has clamping and the rq is busy
 				/*
 				 * Open code uclamp_rq_util_with() except for
 				 * the clamp() part. Ie: apply max aggregation

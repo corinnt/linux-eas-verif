@@ -1,1 +1,1 @@
-# linux-eas-verif
+# Verification of Linux Energy-Aware Scheduling
