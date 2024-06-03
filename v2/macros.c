@@ -38,7 +38,8 @@
 
 // #define ULONG_MAX	(~0UL) //don't need to redefine from limits.h
 
-/* begin ~ moved to for_loops ~ 
+/* 
+// begin ~ moved to for_loops,c ~ 
 
 #define for_each_cpu(cpu, mask)				\
 	for_each_set_bit(cpu, cpumask_bits(mask), small_cpumask_bits)
@@ -46,7 +47,8 @@
 #define for_each_set_bit(bit, addr, size) \
 	for ((bit) = 0; (bit) = find_next_bit((addr), (size), (bit)), (bit) < (size); (bit)++)
     
-end moved to for_loops */
+//end moved to for_loops 
+*/
 
 #define small_cpumask_bits ((unsigned int)NR_CPUS)
 

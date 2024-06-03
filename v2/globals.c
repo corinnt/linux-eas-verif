@@ -15,7 +15,7 @@ struct  sched_avg {
 
 struct  cpumask {
     //unsigned long bits[1];
-    unsigned long* bits; //manual replacement per Julia's recommendation
+    unsigned long* bits; // manual replacement per Julia's recommendation
 };
 
 typedef struct  cpumask cpumask_t;
@@ -24,7 +24,7 @@ struct cfs_rq {
     struct  sched_avg avg;
 };
 
-struct  sched_entity {  // all fields removed - do we need them? added a filler
+struct  sched_entity {  // all fields removed by extraction tool - do we need them? added a filler
     unsigned long corinn_filler; 
 };
 
