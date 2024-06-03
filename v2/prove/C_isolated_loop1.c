@@ -1,4 +1,3 @@
-
 #include "../macros.c"
 #include "../globals.c"
 #include "../preds.c"
@@ -80,7 +79,7 @@ behavior none:
 complete behaviors;
 disjoint behaviors;
 */
-struct sched_domain* testing_loop_1(struct sched_domain* sd, int prev_cpu)
+struct sched_domain* isolated_loop_1(struct sched_domain* sd, int prev_cpu)
 /*@ ghost (struct sched_domain** array, int index, int n, int loop_index) */ 
 {
 	/*@	
