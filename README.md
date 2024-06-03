@@ -19,7 +19,7 @@ we may ensure that this implementation adheres to its scheduling goals in all ca
 
 ## Explanation of files
 
-`v2/prove/C_isolated_loop` contains a function with the first while-loop in the EAS function. All the contracts prove. 
+`v2/prove/C_isolated_loop1` contains a function with the first while-loop in the EAS function. All the contracts prove. 
 
 `find_eas_cpu` contains the full target function `find_energy_efficient_cpu`. 
 
