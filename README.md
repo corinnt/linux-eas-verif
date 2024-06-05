@@ -21,8 +21,10 @@ we may ensure that this implementation adheres to its scheduling goals in all ca
 
 `v2/prove/C_isolated_loop1` contains a function with the first while-loop in the EAS function. All the contracts prove. 
 
+`v2/prove/C_isolated_loop2` contains a function with the second while-loop in the EAS function. In progress. 
+
 `find_eas_cpu` contains the full target function `find_energy_efficient_cpu`. 
 
-`reference_all_defs` is the file extracted using Keisuke's tool containing all the macros and functions called in the function. 
+`reference_all_defs` is the file extracted using Keisuke's tool containing all the macros and functions called in the function of interest. 
 
 
